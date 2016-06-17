@@ -5,4 +5,14 @@ var connection = mysql.createConnection({
 	user: 'root',
 	password: process.argv[2],
 	database: 'Bamazon'
-})
+});
+
+connection.connect(function(err) {
+	if (err) throw err;
+	console.log('connected as id' + connection.threadId);
+});
+
+connection.query('SELECT * FROM Products', function(err, data) {
+	if (err) throw err;
+	console.log(data);
+});
