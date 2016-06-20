@@ -78,16 +78,13 @@ var buyItem = function() {
                         inquirer.prompt({
                             name: "buyMore",
                             type: "confirm",
-                            message: "Would you like to buy another Product? [Y/N]",
-                            validate: function(value) {
-                                if (value == Y) {
-                                    return true;
-                                    start();
-                                } else {
-                                    return false;
-                                    connection.end();
-                                    console.log("Thank you for shopping with Bamazon!")
-                                }
+                            message: "Would you like to buy another Product?",
+                        }).then(function(answer) {
+                            if (answer.buyMore == true) {
+                                start();
+                            } else {
+                                console.log("Thank your for shopping with Bamazon!")
+                                connection.end();
                             }
                         })
                         }
