@@ -4,18 +4,18 @@ var inquirer = require('inquirer');
 var Table = require('cli-table');
 //creates a connection to MySQL database
 var connection = mysql.createConnection({
-	host: 'localhost',
-	port: 3306,
-	user: 'root',
-	password: 'Password2016!',
-	database: 'Bamazon'
-})
+    host: 'localhost',
+    port: 3306,
+    user: 'root',
+    password: 'Password2016!',
+    database: 'Bamazon'
+});
 //Provides status of SQL connection
 connection.connect(function(err) {
-	if (err) throw err;
-	console.log('connected as id' + connection.threadId + '\n\n');
-	start();
-})
+    if (err) throw err;
+    console.log('connected as id' + connection.threadId + '\n\n');
+    start();
+});
 
 
 // performs inital query of Products table from database
@@ -26,27 +26,27 @@ var start = function() {
         console.log('---------------------------------');
         // New Table instance to format returned sql data
             var table = new Table({
-                head: ['ItemID', 'ProductName', 'Price', 'Quantity']
-              , colWidths: [10, 40, 10, 10]
+                head: ['ItemID', 'ProductName', 'Price', 'Quantity'],
+                colWidths: [10, 40, 10, 10]
             });
         for (var i=0; i < res.length; i++) {
-            var productArray = [res[i].ItemID, res[i].ProductName, res[i].Price, res[i].StockQuantity]
-	        table.push(productArray);
-		}
+            var productArray = [res[i].ItemID, res[i].ProductName, res[i].Price, res[i].StockQuantity];
+            table.push(productArray);
+        }
         console.log(table.toString());
         buyItem();
-        })
-    }
+        });
+    };
 
 //Prompts the customer on which item to buy
 var buyItem = function() {
-	inquirer.prompt([{
-		name: "Item",
-		type: "input",
+    inquirer.prompt([{
+        name: "Item",
+        type: "input",
         message: "Choose the ID of the Item you would like to buy",
-		validate: function(value) {
-			
-            if (isNaN(value) == false) {
+        validate: function(value) {
+            
+            if (isNaN(value) === false) {
                 return true;
             } else {
                 console.log("\nPlease enter only the Item number of the item you'd like to buy\n");
@@ -59,7 +59,7 @@ var buyItem = function() {
         message: "How many would you like to buy?",
         validate: function(value) {
             
-            if (isNaN(value) == false) {
+            if (isNaN(value) === false) {
                 return true;
             } else {
                 console.log("\nPlease enter a valid Quantity\n");
@@ -67,7 +67,7 @@ var buyItem = function() {
             }
         }
         }]).then(function(answer) {
-			console.log(answer);
+            console.log(answer);
             var ItemInt = parseInt(answer.Qty);
             console.log(ItemInt);
                 connection.query("SELECT * FROM Products WHERE ?", [{ItemID: answer.Item}], function(err, data) { 
@@ -90,13 +90,13 @@ var buyItem = function() {
                             type: "confirm",
                             message: "Would you like to buy another Product?",
                         }).then(function(answer) {
-                            if (answer.buyMore == true) {
+                            if (answer.buyMore === true) {
                                 start();
                             } else {
-                                console.log("Thank your for shopping with Bamazon!")
+                                console.log("Thank your for shopping with Bamazon!");
                                 connection.end();
                             }
-                        })
+                        });
                         }
                     });
                 }               
