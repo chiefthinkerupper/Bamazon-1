@@ -13,26 +13,25 @@ var connection = mysql.createConnection({
 //Provides status of SQL connection
 connection.connect(function(err) {
 	if (err) throw err;
-	console.log('connected as id' + connection.threadId);
+	console.log('connected as id' + connection.threadId + '\n\n');
 	start();
 })
 
-// New Table instance to format returned sql data
-var table = new Table({
-    head: ['ItemID', 'ProductName', 'Price', 'Quantity']
-  , colWidths: [10, 40, 10, 10]
-});
 
 // performs inital query of Products table from database
 var start = function() {
     connection.query('SELECT * FROM Products', function(err, res) {
         console.log('---------------------------------');
         console.log('Available Bamazon Products');
-        console.log('---------------------------------\n');
+        console.log('---------------------------------');
+        // New Table instance to format returned sql data
+            var table = new Table({
+                head: ['ItemID', 'ProductName', 'Price', 'Quantity']
+              , colWidths: [10, 40, 10, 10]
+            });
         for (var i=0; i < res.length; i++) {
-        var productArray = [res[i].ItemID, res[i].ProductName, res[i].Price, res[i].StockQuantity]
-		table.push(productArray);
-        // console.log(res[i].ItemID + " || " + res[i].ProductName + " || Price: " + res[i].Price + " || Quantity: " + res[i].StockQuantity + '\n');	
+            var productArray = [res[i].ItemID, res[i].ProductName, res[i].Price, res[i].StockQuantity]
+	        table.push(productArray);
 		}
         console.log(table.toString());
         buyItem();
