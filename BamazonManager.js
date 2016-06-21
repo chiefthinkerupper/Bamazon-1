@@ -42,13 +42,29 @@ var appStart = function() {
                 case 'Add to Inventory':
                     addInventory();
                     break;
-                case 'Add a New Product':
+                case 'Add New Product':
                     newProduct();
                     break;
             } // end of switch
 
         }); // end of inquirer prompt function
+}  
     
+    function appContinue() {
+    inquirer.prompt({
+                name: "continue",
+                type: "confirm",
+                message: "Would you like to go back to the main menu?",
+            }).then(function(answer) {
+                if (answer.continue == true) {
+                    appStart();
+                } else {
+                    console.log("Ending session with Bamazon Manager!");
+                    connection.end();
+                }
+            }); 
+    };
+
     function productsForSale() {
     connection.query('SELECT * FROM Products', function(err, res) {
         console.log('---------------------------------');
@@ -113,31 +129,67 @@ var appStart = function() {
             }, {
                 name: 'qty',
                 type:'input',
-                message: 'Enter the quantity you want to add to inventory\n\n'
+                message: 'Enter the quantity you want to add to inventory'
             }]).then(function(answer) {
-                var addAmount = parseInt(answer.qty);
-                connection.query('UPDATE products SET StockQuantity = ? WHERE ItemID = ?', [addAmount, answer.ItemID], function(err, results) {
+                var addAmount = (parseInt(answer.qty));
+                
+                connection.query("SELECT * FROM Products WHERE ?", [{ItemID: answer.ItemID}], function(err, res) {
+                            if(err) {
+                                throw err;
+                            } else {
+                            var updateQty = (parseInt(res[0].StockQuantity) + addAmount);
+                            console.log(updateQty);                      
+                            }
+                    connection.query('UPDATE products SET StockQuantity = ? WHERE ItemID = ?', [updateQty, answer.ItemID], function(err, results) {
                             if(err) {
                                 throw err;
                             } else {
                             console.log('New Inventory Added!\n');
-                            inquirer.prompt({
-                            name: "continue",
-                            type: "confirm",
-                            message: "Would you like to go back to the main menu?",
-                        }).then(function(answer) {
-                            if (answer.continue == true) {
-                                appstart();
-                            } else {
-                                console.log("Ending session with Bamazon Manager!")
-                                connection.end();
+                            appContinue();                      
                             }
-                        });                       
+                    });
+
+                });
+
+
+                
+        });
+    }
+
+    function newProduct() {
+        inquirer.prompt([{
+            name: "product",
+            type: "input",
+            message: "Type the name of the Product you want to add to Bamazon"
+        }, {
+            name: "department",
+            type: "input",
+            message: "Type the Department name of the Product you want to add to Bamazon"
+        }, {
+            name: "price",
+            type: "input",
+            message: "Enter the price of the product without currency symbols"
+        }, {
+            name: "quantity",
+            type: "input",
+            message: "Enter the amount you want to add to the inventory"
+        }]).then(function(answers) {
+            var ProductName = answers.product;
+            var DepartmentName = answers.department;
+            var Price = answers.price;
+            var StockQuantity = answers.quantity;
+            connection.query('INSERT INTO Products (ProductName, DepartmentName, Price, StockQuantity) VALUES (?, ?, ?, ?)', [ProductName, DepartmentName, Price, StockQuantity], function(err, data) {
+                if (err) {
+                    throw err;
+                } else {
+                console.log('\n\nProduct: ' + ProductName + ' added successfully!\n\n');
+                appContinue();
                 }
             });
         });
-    }
-};
+    }   
+
+
 
     
                         
