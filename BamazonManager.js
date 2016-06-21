@@ -49,7 +49,7 @@ var appStart = function() {
 
         }); // end of inquirer prompt function
 }  
-    
+    //Function to prompt user if they want to continue or end connection
     function appContinue() {
     inquirer.prompt({
                 name: "continue",
@@ -65,6 +65,7 @@ var appStart = function() {
             }); 
     };
 
+    //Lists the products for sale
     function productsForSale() {
     connection.query('SELECT * FROM Products', function(err, res) {
         console.log('---------------------------------');
@@ -77,14 +78,13 @@ var appStart = function() {
             });
         for (var i=0; i < res.length; i++) {
         var productArray = [res[i].ItemID, res[i].ProductName, res[i].Price, res[i].StockQuantity];
-        table.push(productArray);
-        // console.log(res[i].ItemID + " || " + res[i].ProductName + " || Price: " + res[i].Price + " || Quantity: " + res[i].StockQuantity + '\n');    
+        table.push(productArray);    
         }
         console.log(table.toString());
         appStart();
         });
     }
-
+    //List the Products and then filters based on inventory < 5
     function lowInventory() {
     connection.query('SELECT * FROM Products', function(err, res) {
         console.log('---------------------------------');
@@ -105,7 +105,7 @@ var appStart = function() {
         appStart();
         });
     }
-
+    //Function to add inventory to database
     function addInventory() {
         connection.query('SELECT * FROM Products', function(err, res) {
         // New Table instance to format returned sql data
@@ -115,8 +115,7 @@ var appStart = function() {
             });
         for (var i=0; i < res.length; i++) {
         var productArray = [res[i].ItemID, res[i].ProductName, res[i].Price, res[i].StockQuantity];
-        table.push(productArray);
-        // console.log(res[i].ItemID + " || " + res[i].ProductName + " || Price: " + res[i].Price + " || Quantity: " + res[i].StockQuantity + '\n');    
+        table.push(productArray);    
         }
         console.log('\n\n\n');
         console.log(table.toString());
@@ -132,14 +131,14 @@ var appStart = function() {
                 message: 'Enter the quantity you want to add to inventory'
             }]).then(function(answer) {
                 var addAmount = (parseInt(answer.qty));
-                
+                //Queries the database to retrieve the current StockQuantity to perform the addition
                 connection.query("SELECT * FROM Products WHERE ?", [{ItemID: answer.ItemID}], function(err, res) {
                             if(err) {
                                 throw err;
                             } else {
-                            var updateQty = (parseInt(res[0].StockQuantity) + addAmount);
-                            console.log(updateQty);                      
+                            var updateQty = (parseInt(res[0].StockQuantity) + addAmount);                      
                             }
+                    //Updates the database with new quantity
                     connection.query('UPDATE products SET StockQuantity = ? WHERE ItemID = ?', [updateQty, answer.ItemID], function(err, results) {
                             if(err) {
                                 throw err;
@@ -155,7 +154,7 @@ var appStart = function() {
                 
         });
     }
-
+    //Add a new product to the database
     function newProduct() {
         inquirer.prompt([{
             name: "product",
