@@ -1,6 +1,7 @@
 // Node npm var declarations
 var mysql = require('mysql');
 var inquirer = require('inquirer');
+var Table = require('cli-table');
 //creates a connection to MySQL database
 var connection = mysql.createConnection({
 	host: 'localhost',
@@ -15,6 +16,13 @@ connection.connect(function(err) {
 	console.log('connected as id' + connection.threadId);
 	start();
 })
+
+// New Table instance to format returned sql data
+var table = new Table({
+    head: ['ItemID', 'ProductName', 'Price', 'Quantity']
+  , colWidths: [10, 40, 10, 10]
+});
+
 // performs inital query of Products table from database
 var start = function() {
     connection.query('SELECT * FROM Products', function(err, res) {
@@ -22,8 +30,11 @@ var start = function() {
         console.log('Available Bamazon Products');
         console.log('---------------------------------\n');
         for (var i=0; i < res.length; i++) {
-		console.log(res[i].ItemID + " || " + res[i].ProductName + " || Price: " + res[i].Price + " || Quantity: " + res[i].StockQuantity + '\n');	
+        var productArray = [res[i].ItemID, res[i].ProductName, res[i].Price, res[i].StockQuantity]
+		table.push(productArray);
+        // console.log(res[i].ItemID + " || " + res[i].ProductName + " || Price: " + res[i].Price + " || Quantity: " + res[i].StockQuantity + '\n');	
 		}
+        console.log(table.toString());
         buyItem();
         })
     }
