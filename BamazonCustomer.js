@@ -6,7 +6,7 @@ var connection = mysql.createConnection({
 	host: 'localhost',
 	port: 3306,
 	user: 'root',
-	password: 'Fl0r1d@!',
+	password: 'Password2016!',
 	database: 'Bamazon'
 })
 //Provides status of SQL connection
