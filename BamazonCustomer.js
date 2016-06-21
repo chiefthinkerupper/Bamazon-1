@@ -45,7 +45,7 @@ var buyItem = function() {
         type: "input",
         message: "Choose the ID of the Item you would like to buy",
         validate: function(value) {
-            
+            //validates answer
             if (isNaN(value) === false) {
                 return true;
             } else {
@@ -53,12 +53,12 @@ var buyItem = function() {
                 return false;
             }
         }
-    }, {
+    }, {//Prompts the customer for the quantity
         name: "Qty",
         type: "input",
         message: "How many would you like to buy?",
         validate: function(value) {
-            
+            //validates answer
             if (isNaN(value) === false) {
                 return true;
             } else {
@@ -67,16 +67,17 @@ var buyItem = function() {
             }
         }
         }]).then(function(answer) {
-            console.log(answer);
             var ItemInt = parseInt(answer.Qty);
-            console.log(ItemInt);
+                //Queries the database
                 connection.query("SELECT * FROM Products WHERE ?", [{ItemID: answer.Item}], function(err, data) { 
                     if (err) throw err;
+                    //Checks if sufficient quantity exists
                     if (data[0].StockQuantity < ItemInt) {
                        console.log("We're sorry, that Item is currently out of stock\n");
                        console.log("Please choose another Product\n");
                        start(); 
                     } else {
+                        //if quantity exists updates database
                         var updateQty = data[0].StockQuantity - ItemInt;
                         var totalPrice = data[0].Price * ItemInt;
                         connection.query('UPDATE products SET StockQuantity = ? WHERE ItemID = ?', [updateQty, answer.Item], function(err, results) {
@@ -85,6 +86,7 @@ var buyItem = function() {
                         } else {
                         console.log("Purchase successfull!\n");
                         console.log("Your total cost is: $ " + totalPrice);
+                        //Asks the buyer if they would like to continue
                         inquirer.prompt({
                             name: "buyMore",
                             type: "confirm",
